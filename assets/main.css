@@ -1,0 +1,92 @@
+body {
+  background-color: transparent;
+}
+
+.doomFaces {
+  min-width: none;
+  max-width: none;
+  min-height: none;
+  max-height: none;
+}
+
+.wrapper {
+  min-height: 100vh;
+  color: #000;
+  font-family: 'Muli', sans-serif;
+  font-size: 1rem;
+  background-color: transparent;
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+}
+
+.container {
+  background-color: rgba(0, 0, 0, 0.178);
+
+  padding-right: 20px;
+  padding-left: 20px;
+  border-radius: 1em;
+  max-width: 900px;
+  max-height: 500px;
+  margin-right: auto;
+  margin-left: auto;
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+  -webkit-box-shadow: 0px 17px 34px -20px #f5fafa;
+  box-shadow: 0px 17px 34px -20px #f2f8f8;
+}
+
+.add-color-button {
+  display: block;
+  border: none;
+  margin: 0 auto;
+}
+
+.text {
+  font-size: 1rem;
+  margin-bottom: 0.8em;
+}
+
+.title {
+  margin-bottom: 0.9em;
+}
+
+.subtitle {
+  color: antiquewhite;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  margin-bottom: 1.5em;
+  font-weight: 700;
+}
+
+.container {
+  max-width: 900px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.content {
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+  padding: 0 3em;
+  margin-bottom: 1.8em;
+}
+
+.mail {
+  padding: 0.5em 0 0.5em 1.5em;
+  line-height: 3;
+  width: 100%;
+  border: 1px solid #d9d9d9;
+  border-radius: 0.5em;
+  margin-bottom: 1em;
+}
+
+.text {
+  font-size: 1rem;
+  color: rgb(247, 243, 243);
+  width: 90%;
+  text-align: center;
+  margin-top: 0.5em;
+}
