@@ -2,6 +2,8 @@
 
 In Your Face is a VS Code extension that shows you Doom 'Ouch Faces' that correlate to the number of errors in your code!
 
+![Loading...](https://raw.githubusercontent.com/virejdasani/InYourFace/main/assets/smallBanner.png)
+
 ![Loading...](https://raw.githubusercontent.com/virejdasani/InYourFace/main/assets/PreviewVid-InYourFace.gif)
 
 
