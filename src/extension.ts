@@ -209,7 +209,6 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
   // This is doom face 0
   private getHtmlContent0(webview: vscode.Webview): string {
-    // Same for stylesheet
     const stylesheetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
     );
@@ -223,7 +222,6 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
   // This is doom face 1
   private getHtmlContent1(webview: vscode.Webview): string {
-    // Same for stylesheet
     const stylesheetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
     );
@@ -237,7 +235,6 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
   // This is doom face 2
   private getHtmlContent2(webview: vscode.Webview): string {
-    // Same for stylesheet
     const stylesheetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
     );
@@ -251,7 +248,6 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
   // This is doom face 3
   private getHtmlContent3(webview: vscode.Webview): string {
-    // Same for stylesheet
     const stylesheetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
     );
@@ -275,7 +271,7 @@ function getHtml(doomFace: any) {
 			<body>
 			<section class="wrapper">
       <img class="doomFaces" src="${doomFace}" alt="" >
-      <h1 id="errorNum">${getNumErrors()}</h1>
+      <h1 id="errorNum">${getNumErrors() + " errors"}</h1>
 			</section>
       <script>
 

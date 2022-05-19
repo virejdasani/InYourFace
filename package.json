@@ -1,14 +1,14 @@
 {
-  "name": "vscode-extension-sidebar-html",
-  "displayName": "Sidebar Html VS Code Extension",
-  "description": "Sidebar Html VS Code Extension",
+  "name": "error-doom",
+  "displayName": "Error Doom",
+  "description": "Error Doom",
   "version": "1.0.0",
   "publisher": "vscode-extension-webview",
-  "homepage": "https://github.com/KumarVariable/vscode-extension-sidebar-html/blob/afded57b2b4e13a002774b0d2d965b0a9024e83d/README.md",
+  "homepage": "https://github.com/virejdasani/ErrorDoom",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KumarVariable/vscode-extension-sidebar-html.git"
+    "url": "https://github.com/virejdasani/ErrorDoom"
   },
   "engines": {
     "vscode": "^1.61.0"
@@ -23,26 +23,21 @@
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "custom-activitybar",
-          "title": "VSCode Extension",
-          "icon": "assets/logo_bito.svg"
-        }
-      ]
+      "activitybar": [{
+        "id": "custom-activitybar",
+        "title": "VSCode Extension",
+        "icon": "assets/logo_bito.svg"
+      }]
     },
     "views": {
-      "custom-activitybar": [
-        {
-          "type": "webview",
-          "id": "vscodeSidebar.openview",
-          "name": "View",
-          "contextualTitle": "View"
-        }
-      ]
+      "custom-activitybar": [{
+        "type": "webview",
+        "id": "vscodeSidebar.openview",
+        "name": "View",
+        "contextualTitle": "View"
+      }]
     },
-    "commands": [
-      {
+    "commands": [{
         "command": "vscodeSidebar.openview",
         "title": "Sidebar View"
       },
@@ -54,13 +49,11 @@
       }
     ],
     "menus": {
-      "view/title": [
-        {
-          "command": "vscodeSidebar.menu.view",
-          "group": "navigation",
-          "when": "view == vscodeSidebar.openview"
-        }
-      ]
+      "view/title": [{
+        "command": "vscodeSidebar.menu.view",
+        "group": "navigation",
+        "when": "view == vscodeSidebar.openview"
+      }]
     }
   },
   "scripts": {
