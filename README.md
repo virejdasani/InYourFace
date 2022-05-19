@@ -1,4 +1,4 @@
-# In Your Face
+# [In Your Face](https://marketplace.visualstudio.com/items?itemName=VirejDasani.in-your-face)
 
 
 <!-- ![Downloads](https://vsmarketplacebadge.apphb.com/downloads/VirejDasani.in-your-face.svg) -->
