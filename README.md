@@ -13,5 +13,6 @@ In Your Face is a VS Code extension that shows you Doom 'Ouch Faces' that correl
 
 ![Loading...](https://raw.githubusercontent.com/virejdasani/InYourFace/main/assets/PreviewVid-InYourFace.gif)
 
+- Check it out on YouTube [here](https://www.youtube.com/watch?v=BuejUOFOodw)
 
 > Shoutout to [Benny Neugebauer](https://twitter.com/bennycode) for [this idea](https://dev.to/bennycode/comment/1od37)!
