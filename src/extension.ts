@@ -54,140 +54,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposableDisableErrorLens);
 
-  function GetErrorBackgroundColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const errorColor: string = cfg.get("errorColor") || "rgba(240,10,0,0.5)";
-    return errorColor;
-  }
-
-  function GetErrorTextColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const errorTextColor: string =
-      cfg.get("errorTextColor") || "rgba(240,240,240,1.0)";
-    return errorTextColor;
-  }
-
-  function GetWarningBackgroundColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const warningColor: string =
-      cfg.get("warningColor") || "rgba(200,100,0,0.5)";
-    return warningColor;
-  }
-
-  function GetWarningTextColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const warningTextColor: string =
-      cfg.get("warningTextColor") || "rgba(240,240,240,1.0)";
-    return warningTextColor;
-  }
-
-  function GetInfoBackgroundColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const infoColor: string = cfg.get("infoColor") || "rgba(40,20,120,0.5)";
-    return infoColor;
-  }
-
-  function GetInfoTextColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const infoTextColor: string =
-      cfg.get("infoTextColor") || "rgba(240,240,240,1.0)";
-    return infoTextColor;
-  }
-
-  function GetHintBackgroundColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const hintColor: string = cfg.get("hintColor") || "rgba(20,120,40,0.5)";
-    return hintColor;
-  }
-
-  function GetHintTextColor(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const hintTextColor: string =
-      cfg.get("hintTextColor") || "rgba(240,240,240,1.0)";
-    return hintTextColor;
-  }
-
-  function GetAnnotationFontStyle(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const annotationFontStyle: string = cfg.get("fontStyle") || "italic";
-    return annotationFontStyle;
-  }
-
-  function GetAnnotationFontWeight(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const annotationFontWeight: string = cfg.get("fontWeight") || "normal";
-    return annotationFontWeight;
-  }
-
-  function GetAnnotationMargin(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const annotationMargin: string = cfg.get("fontMargin") || "40px";
-    return annotationMargin;
-  }
-
-  function GetEnabledDiagnosticLevels(): string[] {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const enabledDiagnosticLevels: string[] = cfg.get(
-      "enabledDiagnosticLevels"
-    ) || ["error", "warning"];
-    return enabledDiagnosticLevels;
-  }
-
-  function IsErrorLevelEnabled() {
-    return GetEnabledDiagnosticLevels().indexOf("error") >= 0;
-  }
-
-  function IsWarningLevelEnabled() {
-    return GetEnabledDiagnosticLevels().indexOf("warning") >= 0;
-  }
-
-  function IsInfoLevelEnabled() {
-    return GetEnabledDiagnosticLevels().indexOf("info") >= 0;
-  }
-
-  function IsHintLevelEnabled() {
-    return GetEnabledDiagnosticLevels().indexOf("hint") >= 0;
-  }
-
-  function GetStatusBarControl(): string {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const statusBarControl: string =
-      cfg.get("statusBarControl") || "hide-when-no-issues";
-    return statusBarControl;
-  }
-
-  function AddAnnotationTextPrefixes(): boolean {
-    const cfg = vscode.workspace.getConfiguration("errorLens");
-    const addAnnotationTextPrefixes: boolean =
-      cfg.get("addAnnotationTextPrefixes") || false;
-    return addAnnotationTextPrefixes;
-  }
-
-  // Create decorator types that we use to amplify lines containing errors, warnings, info, etc.
-  // createTextEditorDecorationType() ref. @ https://code.visualstudio.com/docs/extensionAPI/vscode-api#window.createTextEditorDecorationType
-  // DecorationRenderOptions ref.  @ https://code.visualstudio.com/docs/extensionAPI/vscode-api#DecorationRenderOptions
-
-  let errorLensDecorationTypeError: vscode.TextEditorDecorationType =
-    vscode.window.createTextEditorDecorationType({
-      isWholeLine: true,
-      backgroundColor: GetErrorBackgroundColor(),
-    });
-  let errorLensDecorationTypeWarning: vscode.TextEditorDecorationType =
-    vscode.window.createTextEditorDecorationType({
-      isWholeLine: true,
-      backgroundColor: GetWarningBackgroundColor(),
-    });
-  let errorLensDecorationTypeInfo: vscode.TextEditorDecorationType =
-    vscode.window.createTextEditorDecorationType({
-      isWholeLine: true,
-      backgroundColor: GetInfoBackgroundColor(),
-    });
-  let errorLensDecorationTypeHint: vscode.TextEditorDecorationType =
-    vscode.window.createTextEditorDecorationType({
-      isWholeLine: true,
-      backgroundColor: GetHintBackgroundColor(),
-    });
-
   vscode.languages.onDidChangeDiagnostics(
     (diagnosticChangeEvent) => {
       onChangedDiagnostics(diagnosticChangeEvent);
@@ -217,11 +83,6 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions
   );
 
-  /**
-   * Invoked by onDidChangeDiagnostics() when the language diagnostics change.
-   *
-   * @param {vscode.DiagnosticChangeEvent} diagnosticChangeEvent - Contains info about the change in diagnostics.
-   */
   function onChangedDiagnostics(
     diagnosticChangeEvent: vscode.DiagnosticChangeEvent
   ) {
@@ -245,12 +106,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }
 
-  /**
-   * Update the editor decorations for the provided URI. Only if the URI scheme is "file" is the function
-   * processed. (It can be others, such as "git://<something>", in which case the function early-exits).
-   *
-   * @param {vscode.Uri} uriToDecorate - Uri to add decorations to.
-   */
   function updateDecorationsForUri(uriToDecorate: vscode.Uri) {
     if (!uriToDecorate) {
       return;
@@ -275,10 +130,6 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const errorLensDecorationOptionsError: vscode.DecorationOptions[] = [];
-    const errorLensDecorationOptionsWarning: vscode.DecorationOptions[] = [];
-    const errorLensDecorationOptionsInfo: vscode.DecorationOptions[] = [];
-    const errorLensDecorationOptionsHint: vscode.DecorationOptions[] = [];
     let numErrors = 0;
     let numWarnings = 0;
 
@@ -314,216 +165,7 @@ export function activate(context: vscode.ExtensionContext) {
           // Ignore other severities.
         }
       }
-
-      let key: any;
-      let addMessagePrefix: boolean = AddAnnotationTextPrefixes();
-      for (key in aggregatedDiagnostics) {
-        // Iterate over property values (not names)
-        let aggregatedDiagnostic = aggregatedDiagnostics[key];
-        let messagePrefix: string = "";
-
-        if (addMessagePrefix) {
-          if (aggregatedDiagnostic.arrayDiagnostics.length > 1) {
-            // If > 1 diagnostic for this source line, the prefix is "Diagnostic #1 of N: "
-            messagePrefix +=
-              "Diagnostic 1/" +
-              aggregatedDiagnostic.arrayDiagnostics.length +
-              ": ";
-          } else {
-            // If only 1 diagnostic for this source line, show the diagnostic severity
-            switch (aggregatedDiagnostic.arrayDiagnostics[0].severity) {
-              case 0:
-                messagePrefix += "Error: ";
-                break;
-
-              case 1:
-                messagePrefix += "Warning: ";
-                break;
-
-              case 2:
-                messagePrefix += "Info: ";
-                break;
-
-              case 3:
-              default:
-                messagePrefix += "Hint: ";
-                break;
-            }
-          }
-        }
-
-        let decorationTextColor;
-        let addErrorLens = false;
-        switch (aggregatedDiagnostic.arrayDiagnostics[0].severity) {
-          // Error
-          case 0:
-            if (IsErrorLevelEnabled()) {
-              addErrorLens = true;
-              decorationTextColor = GetErrorTextColor();
-            }
-            break;
-          // Warning
-          case 1:
-            if (IsWarningLevelEnabled()) {
-              addErrorLens = true;
-              decorationTextColor = GetWarningTextColor();
-            }
-            break;
-          // Info
-          case 2:
-            if (IsInfoLevelEnabled()) {
-              addErrorLens = true;
-              decorationTextColor = GetInfoTextColor();
-            }
-            break;
-          // Hint
-          case 3:
-            if (IsHintLevelEnabled()) {
-              addErrorLens = true;
-              decorationTextColor = GetHintTextColor();
-            }
-            break;
-        }
-
-        if (addErrorLens) {
-          // Generate a DecorationInstanceRenderOptions object which specifies the text which will be rendered
-          // after the source-code line in the editor, and text rendering options.
-          const decInstanceRenderOptions: vscode.DecorationInstanceRenderOptions =
-            {
-              after: {
-                contentText: truncate(
-                  messagePrefix +
-                    aggregatedDiagnostic.arrayDiagnostics[0].message
-                ),
-                fontStyle: GetAnnotationFontStyle(),
-                fontWeight: GetAnnotationFontWeight(),
-                margin: GetAnnotationMargin(),
-                color: decorationTextColor,
-              },
-            };
-
-          // See type 'DecorationOptions': https://code.visualstudio.com/docs/extensionAPI/vscode-api#DecorationOptions
-          const diagnosticDecorationOptions: vscode.DecorationOptions = {
-            range: aggregatedDiagnostic.arrayDiagnostics[0].range,
-            renderOptions: decInstanceRenderOptions,
-          };
-
-          switch (aggregatedDiagnostic.arrayDiagnostics[0].severity) {
-            // Error
-            case 0:
-              errorLensDecorationOptionsError.push(diagnosticDecorationOptions);
-              break;
-            // Warning
-            case 1:
-              errorLensDecorationOptionsWarning.push(
-                diagnosticDecorationOptions
-              );
-              break;
-            // Info
-            case 2:
-              errorLensDecorationOptionsInfo.push(diagnosticDecorationOptions);
-              break;
-            // Hint
-            case 3:
-              errorLensDecorationOptionsHint.push(diagnosticDecorationOptions);
-              break;
-          }
-        }
-      }
     }
-
-    // The errorLensDecorationOptions<X> arrays have been built, now apply them.
-    activeTextEditor.setDecorations(
-      errorLensDecorationTypeError,
-      errorLensDecorationOptionsError
-    );
-    activeTextEditor.setDecorations(
-      errorLensDecorationTypeWarning,
-      errorLensDecorationOptionsWarning
-    );
-    activeTextEditor.setDecorations(
-      errorLensDecorationTypeInfo,
-      errorLensDecorationOptionsInfo
-    );
-    activeTextEditor.setDecorations(
-      errorLensDecorationTypeHint,
-      errorLensDecorationOptionsHint
-    );
-
-    updateStatusBar(numErrors, numWarnings);
-  }
-
-  /**
-   * Update the Visual Studio Code status bar, showing the number of warnings and/or errors.
-   * Control over when (or if) to show the ErrorLens info in the status bar is controlled via the
-   * errorLens.statusBarControl configuration property.
-   *
-   * @param {number} numErrors - The number of error diagnostics reported.
-   * @param {number} numWarnings - The number of warning diagnostics reported.
-   */
-  function updateStatusBar(numErrors: number, numWarnings: number) {
-    // Create _statusBarItem if needed
-    if (!_statusBarItem) {
-      _statusBarItem = vscode.window.createStatusBarItem(
-        vscode.StatusBarAlignment.Left
-      );
-    }
-
-    const statusBarControl = GetStatusBarControl();
-    var showStatusBarText = false;
-    if (errorLensEnabled) {
-      if (statusBarControl === "always") {
-        showStatusBarText = true;
-      } else if (statusBarControl === "never") {
-        showStatusBarText = false;
-      } else if (statusBarControl === "hide-when-no-issues") {
-        if (numErrors + numWarnings > 0) {
-          showStatusBarText = true;
-        }
-      }
-    }
-
-    const activeTextEditor: vscode.TextEditor | undefined =
-      vscode.window.activeTextEditor;
-
-    if (!activeTextEditor || showStatusBarText === false) {
-      // No open text editor or don't want to show ErrorLens info.
-      _statusBarItem.hide();
-    } else {
-      let statusBarText: string;
-
-      if (numErrors + numWarnings === 0) {
-        statusBarText = "ErrorLens: No errors or warnings";
-      } else {
-        statusBarText =
-          "$(bug) ErrorLens: " +
-          numErrors +
-          " error(s) and " +
-          numWarnings +
-          " warning(s).";
-      }
-      console.log("Errors: " + numErrors);
-
-      _statusBarItem.text = statusBarText;
-
-      _statusBarItem.show();
-    }
-    console.log("Errors: " + numErrors);
-    console.log(getNumErrors());
-  }
-
-  /**
-   * Truncate the supplied string to a constant number of characters. (This truncation
-   * limit is hard-coded, and may be changed only by editing the const inside this function).
-   *
-   * @param {string} str - The string to truncate.
-   * @returns {string} - The truncated string, if the string argument is over the hard-coded limit.
-   */
-  function truncate(str: string): string {
-    const truncationLimit: number = 300;
-    return str.length > truncationLimit
-      ? str.slice(0, truncationLimit) + "…"
-      : str;
   }
 }
 
@@ -547,12 +189,15 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
       localResourceRoots: [this._extensionUri],
     };
 
-    // default: 1
-    webviewView.webview.html = this.getHtmlContent1(webviewView.webview);
+    // default webview will show doom face 0
+    webviewView.webview.html = this.getHtmlContent0(webviewView.webview);
 
+    // This is called every second is decides which doom face to show in the webview
     setInterval(() => {
       let errors = getNumErrors();
-      if (errors < 10) {
+      if (errors === 0) {
+        webviewView.webview.html = this.getHtmlContent0(webviewView.webview);
+      } else if (errors < 10) {
         webviewView.webview.html = this.getHtmlContent1(webviewView.webview);
       } else if (errors < 20) {
         webviewView.webview.html = this.getHtmlContent2(webviewView.webview);
@@ -560,8 +205,67 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this.getHtmlContent3(webviewView.webview);
       }
     }, 1000);
+  }
 
-    webviewView.webview.html = `
+  // This is doom face 0
+  private getHtmlContent0(webview: vscode.Webview): string {
+    // Same for stylesheet
+    const stylesheetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+    );
+
+    const doomFace0 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom0.png")
+    );
+
+    return getHtml(doomFace0);
+  }
+
+  // This is doom face 1
+  private getHtmlContent1(webview: vscode.Webview): string {
+    // Same for stylesheet
+    const stylesheetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+    );
+
+    const doomFace1 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
+    );
+
+    return getHtml(doomFace1);
+  }
+
+  // This is doom face 2
+  private getHtmlContent2(webview: vscode.Webview): string {
+    // Same for stylesheet
+    const stylesheetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+    );
+
+    const doomFace2 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
+    );
+
+    return getHtml(doomFace2);
+  }
+
+  // This is doom face 3
+  private getHtmlContent3(webview: vscode.Webview): string {
+    // Same for stylesheet
+    const stylesheetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+    );
+
+    const doomFace3 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
+    );
+
+    return getHtml(doomFace3);
+  }
+}
+
+function getHtml(doomFace: any) {
+  return `
     <!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -569,191 +273,17 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 			</head>
 
 			<body>
-
-        <h1 id="errorNum">${getNumErrors()}</h1>
-
-      </body>
-
-			</html>
-    `;
-  }
-
-  private getHtmlContent1(webview: vscode.Webview): string {
-    // Get the local path to main script run in the webview,
-    // then convert it to a uri we can use in the webview.
-    const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.js")
-    );
-
-    const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "reset.css")
-    );
-    const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "vscode.css")
-    );
-
-    // Same for stylesheet
-    const stylesheetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
-    );
-
-    const doomFace1 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
-    );
-    const doomFace2 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
-    );
-    const doomFace3 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
-    );
-
-    // Use a nonce to only allow a specific script to be run.
-    const nonce = getNonce();
-
-    let errors = getNumErrors();
-
-    return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-
-			</head>
-
-			<body>
 			<section class="wrapper">
-        <h1 id="errorNum">${getNumErrors()}</h1>
-        <img class="doomFaces" src="${doomFace1}" alt="" >
+      <img class="doomFaces" src="${doomFace}" alt="" >
+      <h1 id="errorNum">${getNumErrors()}</h1>
 			</section>
-			<!--<script nonce="${nonce}" src="${scriptUri}"></script>-->
-
-      <script src="${scriptUri}"></script>
       <script>
 
       </script>
       </body>
 
-			</html>`;
-  }
-
-  private getHtmlContent2(webview: vscode.Webview): string {
-    // Get the local path to main script run in the webview,
-    // then convert it to a uri we can use in the webview.
-    const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.js")
-    );
-
-    const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "reset.css")
-    );
-    const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "vscode.css")
-    );
-
-    // Same for stylesheet
-    const stylesheetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
-    );
-
-    const doomFace1 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
-    );
-    const doomFace2 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
-    );
-    const doomFace3 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
-    );
-
-    // Use a nonce to only allow a specific script to be run.
-    const nonce = getNonce();
-
-    let errors = getNumErrors();
-
-    return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-
-			</head>
-
-			<body>
-			<section class="wrapper">
-        <h1 id="errorNum">${getNumErrors()}</h1>
-        <img class="doomFaces" src="${doomFace3}" alt="" >
-			</section>
-			<!--<script nonce="${nonce}" src="${scriptUri}"></script>-->
-
-      <script src="${scriptUri}"></script>
-      <script>
-
-      </script>
-      </body>
-
-			</html>`;
-  }
-  private getHtmlContent3(webview: vscode.Webview): string {
-    // Get the local path to main script run in the webview,
-    // then convert it to a uri we can use in the webview.
-    const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.js")
-    );
-
-    const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "reset.css")
-    );
-    const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "vscode.css")
-    );
-
-    // Same for stylesheet
-    const stylesheetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
-    );
-
-    const doomFace1 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
-    );
-    const doomFace2 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
-    );
-    const doomFace3 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
-    );
-
-    // Use a nonce to only allow a specific script to be run.
-    const nonce = getNonce();
-
-    let errors = getNumErrors();
-
-    return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-
-			</head>
-
-			<body>
-			<section class="wrapper">
-        <h1 id="errorNum">${getNumErrors()}</h1>
-        <img class="doomFaces" src="${doomFace3}" alt="" >
-			</section>
-			<!--<script nonce="${nonce}" src="${scriptUri}"></script>-->
-
-      <script src="${scriptUri}"></script>
-      <script>
-
-      </script>
-      </body>
-
-			</html>`;
-  }
-}
-
-function getNonce() {
-  let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
+		</html>
+  `;
 }
 
 // function to get the number of errors in the open file
