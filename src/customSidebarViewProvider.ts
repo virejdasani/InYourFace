@@ -57,7 +57,7 @@ export class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
-				
+
 			</head>
 
 			<body>
