@@ -3,9 +3,9 @@
   "displayName": "In Your Face",
   "description": "In Your Face, shows you Doom 'Ouch Faces' that correlate to the number of errors in your code!",
   "version": "1.0.0",
-  "publisher": "vscode-extension-webview",
+  "publisher": "VirejDasani",
   "homepage": "https://github.com/virejdasani/InYourFace",
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/virejdasani/InYourFace"
@@ -14,8 +14,26 @@
     "vscode": "^1.61.0"
   },
   "categories": [
-    "Other"
+    "Visualization"
   ],
+  "icon": "assets/icon.png",
+  "galleryBanner": {
+    "color": "#191919",
+    "theme": "dark"
+  },
+  "keywords": [
+    "in your face",
+    "visualization",
+    "doom",
+    "ouch",
+    "face",
+    "errors",
+    "error lens",
+    "error count"
+  ],
+  "__metadata": {
+    "publisherDisplayName": "Virej Dasani"
+  },
   "activationEvents": [
     "onCommand:vscodeSidebar.openview",
     "onView:vscodeSidebar.openview"
