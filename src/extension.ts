@@ -2,7 +2,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { CustomSidebarViewProvider } from "./customSidebarViewProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -283,25 +282,6 @@ export function activate(context: vscode.ExtensionContext) {
     let numErrors = 0;
     let numWarnings = 0;
 
-    // The aggregatedDiagnostics object will contain one or more objects, each object being keyed by "lineN",
-    // where N is the source line where one or more diagnostics are being reported.
-    // Each object which is keyed by "lineN" will contain one or more arrayDiagnostics[] array of objects.
-    // This facilitates gathering info about lines which contain more than one diagnostic.
-    // {
-    //     line28: {
-    //         line: 28,
-    //         arrayDiagnostics: [ <vscode.Diagnostic #1> ]
-    //     },
-    //     line67: {
-    //         line: 67,
-    //         arrayDiagnostics: [ <vscode.Diagnostic# 1>, <vscode.Diagnostic# 2> ]
-    //     },
-    //     line93: {
-    //         line: 93,
-    //         arrayDiagnostics: [ <vscode.Diagnostic #1> ]
-    //     }
-    // };
-
     if (errorLensEnabled) {
       let aggregatedDiagnostics: any = {};
       let diagnostic: vscode.Diagnostic;
@@ -521,13 +501,14 @@ export function activate(context: vscode.ExtensionContext) {
           " error(s) and " +
           numWarnings +
           " warning(s).";
-        console.log("Errors: " + numErrors);
       }
+      console.log("Errors: " + numErrors);
 
       _statusBarItem.text = statusBarText;
 
       _statusBarItem.show();
     }
+    console.log("Errors: " + numErrors);
   }
 
   /**
@@ -543,6 +524,87 @@ export function activate(context: vscode.ExtensionContext) {
       ? str.slice(0, truncationLimit) + "…"
       : str;
   }
+}
+
+class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
+  public static readonly viewType = "vscodeSidebar.openview";
+
+  private _view?: vscode.WebviewView;
+
+  constructor(private readonly _extensionUri: vscode.Uri) {}
+
+  resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    context: vscode.WebviewViewResolveContext<unknown>,
+    token: vscode.CancellationToken
+  ): void | Thenable<void> {
+    this._view = webviewView;
+
+    webviewView.webview.options = {
+      // Allow scripts in the webview
+      enableScripts: true,
+      localResourceRoots: [this._extensionUri],
+    };
+    webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+  }
+
+  private getHtmlContent(webview: vscode.Webview): string {
+    // Get the local path to main script run in the webview,
+    // then convert it to a uri we can use in the webview.
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.js")
+    );
+
+    const styleResetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "reset.css")
+    );
+    const styleVSCodeUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "vscode.css")
+    );
+
+    // Same for stylesheet
+    const stylesheetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+    );
+
+    const doomFace1 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
+    );
+    const doomFace2 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
+    );
+    const doomFace3 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
+    );
+
+    // Use a nonce to only allow a specific script to be run.
+    const nonce = getNonce();
+
+    return `<!DOCTYPE html>
+			<html lang="en">
+			<head>
+
+			</head>
+
+			<body>
+			<section class="wrapper">
+        <img class="doomFaces" src="${doomFace3}" alt="" >
+			</section>
+			<!--<script nonce="${nonce}" src="${scriptUri}"></script>-->
+      </body>
+
+			</html>`;
+  }
+}
+
+function getNonce() {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
 }
 
 // this method is called when your extension is deactivated
