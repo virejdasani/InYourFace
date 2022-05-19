@@ -1,14 +1,14 @@
 {
-  "name": "error-doom",
-  "displayName": "Error Doom",
-  "description": "Error Doom",
+  "name": "in-your-face",
+  "displayName": "In Your Face",
+  "description": "In Your Face, shows you Doom 'Ouch Faces' that correlate to the number of errors in your code!",
   "version": "1.0.0",
   "publisher": "vscode-extension-webview",
-  "homepage": "https://github.com/virejdasani/ErrorDoom",
+  "homepage": "https://github.com/virejdasani/InYourFace",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/virejdasani/ErrorDoom"
+    "url": "https://github.com/virejdasani/InYourFace"
   },
   "engines": {
     "vscode": "^1.61.0"
@@ -33,8 +33,8 @@
       "custom-activitybar": [{
         "type": "webview",
         "id": "vscodeSidebar.openview",
-        "name": "Error Doom",
-        "contextualTitle": "Error Doom"
+        "name": "In Your Face",
+        "contextualTitle": "In Your Face"
       }]
     },
     "commands": [{

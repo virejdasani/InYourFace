@@ -1,3 +1,10 @@
+// A lot of the code used to make this extension is from the following repos:
+// https://github.com/phindle/error-lens/blob/master/src/extension.ts
+// https://github.com/microsoft/vscode-extension-samples/tree/main/webview-sample
+// https://github.com/microsoft/vscode-extension-samples/tree/main/webview-view-sample
+// https://code.visualstudio.com/api/extension-guides/webview
+// and more that I can't find anymore
+
 "use strict";
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
