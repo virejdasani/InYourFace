@@ -546,10 +546,39 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
       enableScripts: true,
       localResourceRoots: [this._extensionUri],
     };
-    webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+
+    // default: 1
+    webviewView.webview.html = this.getHtmlContent1(webviewView.webview);
+
+    setInterval(() => {
+      let errors = getNumErrors();
+      if (errors < 10) {
+        webviewView.webview.html = this.getHtmlContent1(webviewView.webview);
+      } else if (errors < 20) {
+        webviewView.webview.html = this.getHtmlContent2(webviewView.webview);
+      } else if (errors < 30) {
+        webviewView.webview.html = this.getHtmlContent3(webviewView.webview);
+      }
+    }, 1000);
+
+    webviewView.webview.html = `
+    <!DOCTYPE html>
+			<html lang="en">
+			<head>
+
+			</head>
+
+			<body>
+
+        <h1 id="errorNum">${getNumErrors()}</h1>
+
+      </body>
+
+			</html>
+    `;
   }
 
-  private getHtmlContent(webview: vscode.Webview): string {
+  private getHtmlContent1(webview: vscode.Webview): string {
     // Get the local path to main script run in the webview,
     // then convert it to a uri we can use in the webview.
     const scriptUri = webview.asWebviewUri(
@@ -581,6 +610,8 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
 
+    let errors = getNumErrors();
+
     return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -589,9 +620,126 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
 			<body>
 			<section class="wrapper">
+        <h1 id="errorNum">${getNumErrors()}</h1>
+        <img class="doomFaces" src="${doomFace1}" alt="" >
+			</section>
+			<!--<script nonce="${nonce}" src="${scriptUri}"></script>-->
+
+      <script src="${scriptUri}"></script>
+      <script>
+
+      </script>
+      </body>
+
+			</html>`;
+  }
+
+  private getHtmlContent2(webview: vscode.Webview): string {
+    // Get the local path to main script run in the webview,
+    // then convert it to a uri we can use in the webview.
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.js")
+    );
+
+    const styleResetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "reset.css")
+    );
+    const styleVSCodeUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "vscode.css")
+    );
+
+    // Same for stylesheet
+    const stylesheetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+    );
+
+    const doomFace1 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
+    );
+    const doomFace2 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
+    );
+    const doomFace3 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
+    );
+
+    // Use a nonce to only allow a specific script to be run.
+    const nonce = getNonce();
+
+    let errors = getNumErrors();
+
+    return `<!DOCTYPE html>
+			<html lang="en">
+			<head>
+
+			</head>
+
+			<body>
+			<section class="wrapper">
+        <h1 id="errorNum">${getNumErrors()}</h1>
         <img class="doomFaces" src="${doomFace3}" alt="" >
 			</section>
 			<!--<script nonce="${nonce}" src="${scriptUri}"></script>-->
+
+      <script src="${scriptUri}"></script>
+      <script>
+
+      </script>
+      </body>
+
+			</html>`;
+  }
+  private getHtmlContent3(webview: vscode.Webview): string {
+    // Get the local path to main script run in the webview,
+    // then convert it to a uri we can use in the webview.
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.js")
+    );
+
+    const styleResetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "reset.css")
+    );
+    const styleVSCodeUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "vscode.css")
+    );
+
+    // Same for stylesheet
+    const stylesheetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+    );
+
+    const doomFace1 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
+    );
+    const doomFace2 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
+    );
+    const doomFace3 = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
+    );
+
+    // Use a nonce to only allow a specific script to be run.
+    const nonce = getNonce();
+
+    let errors = getNumErrors();
+
+    return `<!DOCTYPE html>
+			<html lang="en">
+			<head>
+
+			</head>
+
+			<body>
+			<section class="wrapper">
+        <h1 id="errorNum">${getNumErrors()}</h1>
+        <img class="doomFaces" src="${doomFace3}" alt="" >
+			</section>
+			<!--<script nonce="${nonce}" src="${scriptUri}"></script>-->
+
+      <script src="${scriptUri}"></script>
+      <script>
+
+      </script>
       </body>
 
 			</html>`;
