@@ -2,7 +2,7 @@
   "name": "in-your-face",
   "displayName": "In Your Face",
   "description": "In Your Face, shows you Doom 'Ouch Faces' that correlate to the number of errors in your code!",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "publisher": "VirejDasani",
   "homepage": "https://github.com/virejdasani/InYourFace",
   "license": "MIT",
@@ -56,12 +56,11 @@
       }]
     },
     "commands": [{
-        "command": "in-your-face.openview.focus",
-        "category": "In Your Face",
-        "title": "Open Sidebar",
-        "icon": "$(clear-all)"
-      }
-    ]
+      "command": "in-your-face.openview.focus",
+      "category": "In Your Face",
+      "title": "Open Sidebar",
+      "icon": "$(clear-all)"
+    }]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
