@@ -19,9 +19,9 @@ In Your Face is a VS Code extension that shows you Doom 'Ouch Faces' that correl
 - Check out [Incredibly In Your Face](https://marketplace.visualstudio.com/items?itemName=VirejDasani.incredibly-in-your-face) which is based on the uncanny Mr. Incredible faces
   ![Loading...](https://raw.githubusercontent.com/virejdasani/Incredibly-InYourFace/main/assets/smallBanner.png)
 
-> Shoutout to [Benny Neugebauer](https://twitter.com/bennycode) for [this idea](https://dev.to/bennycode/comment/1od37)!
-
 ---
+
+> Shoutout to [Benny Neugebauer](https://twitter.com/bennycode) for [this idea](https://dev.to/bennycode/comment/1od37)!
 
 In Your Face is developed by [Virej Dasani](https://virejdasani.github.io/)
 
