@@ -197,73 +197,27 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     };
 
     // default webview will show doom face 0
-    webviewView.webview.html = this.getHtmlContent0(webviewView.webview);
+    webviewView.webview.html = this.getHtmlContent(webviewView.webview, "0");
 
     // This is called every second is decides which doom face to show in the webview
     setInterval(() => {
-      let errors = getNumErrors();
-      if (errors === 0) {
-        webviewView.webview.html = this.getHtmlContent0(webviewView.webview);
-      } else if (errors < 5) {
-        webviewView.webview.html = this.getHtmlContent1(webviewView.webview);
-      } else if (errors < 10) {
-        webviewView.webview.html = this.getHtmlContent2(webviewView.webview);
-      } else {
-        webviewView.webview.html = this.getHtmlContent3(webviewView.webview);
-      }
+      const errors = getNumErrors();
+      let i = "0";
+      if (errors) i = errors < 5 ? "1" : errors < 10 ? "2" : "3";
+      webviewView.webview.html = this.getHtmlContent(webviewView.webview, i);
     }, 1000);
   }
 
-  // This is doom face 0
-  private getHtmlContent0(webview: vscode.Webview): string {
+  private getHtmlContent(webview: vscode.Webview, i: string): string {
     const stylesheetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
     );
 
-    const doomFace0 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom0.png")
+    const doomFace = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "assets", `doom${i}.png`)
     );
 
-    return getHtml(doomFace0);
-  }
-
-  // This is doom face 1
-  private getHtmlContent1(webview: vscode.Webview): string {
-    const stylesheetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
-    );
-
-    const doomFace1 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom1.png")
-    );
-
-    return getHtml(doomFace1);
-  }
-
-  // This is doom face 2
-  private getHtmlContent2(webview: vscode.Webview): string {
-    const stylesheetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
-    );
-
-    const doomFace2 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom2.png")
-    );
-
-    return getHtml(doomFace2);
-  }
-
-  // This is doom face 3
-  private getHtmlContent3(webview: vscode.Webview): string {
-    const stylesheetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
-    );
-
-    const doomFace3 = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "doom3.png")
-    );
-
-    return getHtml(doomFace3);
+    return getHtml(doomFace);
   }
 }
 
