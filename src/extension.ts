@@ -222,6 +222,7 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 }
 
 function getHtml(doomFace: any) {
+  const numErrors = getNumErrors();
   return `
     <!DOCTYPE html>
 			<html lang="en">
@@ -232,7 +233,7 @@ function getHtml(doomFace: any) {
 			<body>
 			<section class="wrapper">
       <img class="doomFaces" src="${doomFace}" alt="" >
-      <h1 id="errorNum">${getNumErrors() + " errors"}</h1>
+      <h1 id="errorNum">${numErrors + " error" + (numErrors > 1 ? "s" : "")}</h1>
 			</section>
       </body>
 
