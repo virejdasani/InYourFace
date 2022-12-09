@@ -217,25 +217,26 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, "assets", `doom${i}.png`)
     );
 
-    return getHtml(doomFace);
+    return getHtml(doomFace, stylesheetUri);
   }
 }
 
-function getHtml(doomFace: any) {
+function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
+  const errorNum = getNumErrors();
   return `
     <!DOCTYPE html>
-			<html lang="en">
-			<head>
-
-			</head>
-
-			<body>
-			<section class="wrapper">
-      <img class="doomFaces" src="${doomFace}" alt="" >
-      <h1 id="errorNum">${getNumErrors() + " errors"}</h1>
-			</section>
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" href="${stylesheetUri}" />
+      </head>
+      <body>
+        <section>
+          <img src="${doomFace}">
+          <h2 class=${errorNum ? "alarm" : ""}>
+            ${errorNum} ${errorNum === 1 ? "error" : "errors"}
+          </h2>
+        </section>
       </body>
-
 		</html>
   `;
 }
