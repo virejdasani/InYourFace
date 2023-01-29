@@ -201,7 +201,8 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
     // This is called every second is decides which doom face to show in the webview
     setInterval(() => {
-      const errors = getNumErrors();
+      let [errors, warnings] = getNumErrors();
+      errors += warnings / 2;
       let i = "0";
       if (errors) i = errors < 5 ? "1" : errors < 10 ? "2" : "3";
       webviewView.webview.html = this.getHtmlContent(webviewView.webview, i);
@@ -222,7 +223,7 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 }
 
 function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
-  const errorNum = getNumErrors();
+  const [errorNum, errorWar] = getNumErrors();
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -232,8 +233,9 @@ function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
       <body>
         <section>
           <img src="${doomFace}">
-          <h2 class=${errorNum ? "alarm" : ""}>
+          <h2 class=${errorNum ? "alarm" : errorWar ? "yellow": ""}>
             ${errorNum} ${errorNum === 1 ? "error" : "errors"}
+            ${errorWar} ${errorWar === 1 ? "warning" : "warnings"}
           </h2>
         </section>
       </body>
@@ -242,11 +244,11 @@ function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
 }
 
 // function to get the number of errors in the open file
-function getNumErrors(): number {
+function getNumErrors(): [number, number]{
   const activeTextEditor: vscode.TextEditor | undefined =
     vscode.window.activeTextEditor;
   if (!activeTextEditor) {
-    return 0;
+    return [0,0];
   }
   const document: vscode.TextDocument = activeTextEditor.document;
 
@@ -285,7 +287,7 @@ function getNumErrors(): number {
     }
   }
 
-  return numErrors;
+  return [numErrors, numWarnings];
 }
 
 // this method is called when your extension is deactivated
