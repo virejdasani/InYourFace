@@ -201,8 +201,10 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
     // This is called every second is decides which doom face to show in the webview
     setInterval(() => {
+      const config = vscode.workspace.getConfiguration('InYourFace');
+      const errorUseWarnings = config.get<boolean>('error.usewarnings');
       let [errors, warnings] = getNumErrors();
-      errors += warnings / 2;
+      if(errorUseWarnings == true){errors += warnings / 2;}
       let i = "0";
       if (errors) i = errors < 5 ? "1" : errors < 10 ? "2" : "3";
       webviewView.webview.html = this.getHtmlContent(webviewView.webview, i);
@@ -224,6 +226,29 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
 function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
   const [errorNum, errorWar] = getNumErrors();
+
+  const config = vscode.workspace.getConfiguration('InYourFace');
+  const errorUseWarnings = config.get<boolean>('error.usewarnings');
+
+  console.log(errorUseWarnings);
+  if(errorUseWarnings == false){
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" href="${stylesheetUri}" />
+      </head>
+      <body>
+        <section>
+          <img src="${doomFace}">
+          <h2 class=${errorNum ? "alarm" : ""}>
+            ${errorNum} ${errorNum === 1 ? "error" : "errors"}
+          </h2>
+        </section>
+      </body>
+		</html>
+  `;
+  }
   return `
     <!DOCTYPE html>
     <html lang="en">
