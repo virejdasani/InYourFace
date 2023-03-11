@@ -24,3 +24,6 @@ h2 {
 h2.alarm {
   color: rgb(176, 7, 41);
 }
+h2.yellow {
+  color: rgb(176, 173, 7);
+}

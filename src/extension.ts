@@ -201,7 +201,10 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
     // This is called every second is decides which doom face to show in the webview
     setInterval(() => {
-      const errors = getNumErrors();
+      const config = vscode.workspace.getConfiguration('InYourFace');
+      const errorUseWarnings = config.get<boolean>('error.usewarnings');
+      let [errors, warnings] = getNumErrors();
+      if(errorUseWarnings == true){errors += warnings / 2;}
       let i = "0";
       if (errors) i = errors < 5 ? "1" : errors < 10 ? "2" : "3";
       webviewView.webview.html = this.getHtmlContent(webviewView.webview, i);
@@ -222,8 +225,14 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 }
 
 function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
-  const errorNum = getNumErrors();
-  return `
+  const [errorNum, errorWar] = getNumErrors();
+
+  const config = vscode.workspace.getConfiguration('InYourFace');
+  const errorUseWarnings = config.get<boolean>('error.usewarnings');
+
+  console.log(errorUseWarnings);
+  if(errorUseWarnings == false){
+    return `
     <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -239,14 +248,32 @@ function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
       </body>
 		</html>
   `;
+  }
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" href="${stylesheetUri}" />
+      </head>
+      <body>
+        <section>
+          <img src="${doomFace}">
+          <h2 class=${errorNum ? "alarm" : errorWar ? "yellow": ""}>
+            ${errorNum} ${errorNum === 1 ? "error" : "errors"}
+            ${errorWar} ${errorWar === 1 ? "warning" : "warnings"}
+          </h2>
+        </section>
+      </body>
+		</html>
+  `;
 }
 
 // function to get the number of errors in the open file
-function getNumErrors(): number {
+function getNumErrors(): [number, number]{
   const activeTextEditor: vscode.TextEditor | undefined =
     vscode.window.activeTextEditor;
   if (!activeTextEditor) {
-    return 0;
+    return [0,0];
   }
   const document: vscode.TextDocument = activeTextEditor.document;
 
@@ -285,7 +312,7 @@ function getNumErrors(): number {
     }
   }
 
-  return numErrors;
+  return [numErrors, numWarnings];
 }
 
 // this method is called when your extension is deactivated

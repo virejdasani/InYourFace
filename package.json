@@ -55,6 +55,16 @@
         "contextualTitle": "In Your Face"
       }]
     },
+    "configuration": {
+      "title": "InYourFace",
+      "properties": {
+          "InYourFace.error.usewarnings": {
+              "type": "boolean",
+              "default": false,
+              "description": "Should take in account warnings"
+          }
+      }
+    },
     "commands": [{
       "command": "in-your-face.openview.focus",
       "category": "In Your Face",
