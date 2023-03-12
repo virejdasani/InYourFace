@@ -215,11 +215,16 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     const stylesheetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
     );
-
-    const doomFace = webview.asWebviewUri(
+    const config = vscode.workspace.getConfiguration('InYourFace');
+    const useDoomFace = config.get<boolean>('face.useDoomFace');
+    let doomFace: vscode.Uri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "assets", `doom${i}.png`)
     );
-
+    if(!useDoomFace){
+      doomFace = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, "assets", "Uncanny-assets",`incredible${i}.png`)
+      );
+    }
     return getHtml(doomFace, stylesheetUri);
   }
 }
