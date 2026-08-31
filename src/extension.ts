@@ -1,20 +1,10 @@
-// A lot of the code used to make this extension is from the following repos:
-// https://github.com/phindle/error-lens/blob/master/src/extension.ts
-// https://github.com/microsoft/vscode-extension-samples/tree/main/webview-sample
+// Based on:
 // https://github.com/microsoft/vscode-extension-samples/tree/main/webview-view-sample
 // https://code.visualstudio.com/api/extension-guides/webview
-// and more that I can't find anymore
 
-"use strict";
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-  console.log("Extension activated");
-
+export function activate(context: vscode.ExtensionContext): void {
   const provider = new CustomSidebarViewProvider(context.extensionUri);
 
   context.subscriptions.push(
@@ -23,297 +13,120 @@ export function activate(context: vscode.ExtensionContext) {
       provider
     )
   );
-
-  let _statusBarItem: vscode.StatusBarItem;
-  let errorLensEnabled: boolean = true;
-
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // console.log('Visual Studio Code Extension "errorlens" is now active');
-
-  // Commands are defined in the package.json file
-  let disposableEnableErrorLens = vscode.commands.registerCommand(
-    "ErrorLens.enable",
-    () => {
-      errorLensEnabled = true;
-
-      const activeTextEditor: vscode.TextEditor | undefined =
-        vscode.window.activeTextEditor;
-      if (activeTextEditor) {
-        updateDecorationsForUri(activeTextEditor.document.uri);
-      }
-    }
-  );
-
-  context.subscriptions.push(disposableEnableErrorLens);
-
-  let disposableDisableErrorLens = vscode.commands.registerCommand(
-    "ErrorLens.disable",
-    () => {
-      errorLensEnabled = false;
-
-      const activeTextEditor: vscode.TextEditor | undefined =
-        vscode.window.activeTextEditor;
-      if (activeTextEditor) {
-        updateDecorationsForUri(activeTextEditor.document.uri);
-      }
-    }
-  );
-
-  context.subscriptions.push(disposableDisableErrorLens);
-
-  vscode.languages.onDidChangeDiagnostics(
-    (diagnosticChangeEvent) => {
-      onChangedDiagnostics(diagnosticChangeEvent);
-    },
-    null,
-    context.subscriptions
-  );
-
-  // Note: URIs for onDidOpenTextDocument() can contain schemes other than file:// (such as git://)
-  vscode.workspace.onDidOpenTextDocument(
-    (textDocument) => {
-      updateDecorationsForUri(textDocument.uri);
-    },
-    null,
-    context.subscriptions
-  );
-
-  // Update on editor switch.
-  vscode.window.onDidChangeActiveTextEditor(
-    (textEditor) => {
-      if (textEditor === undefined) {
-        return;
-      }
-      updateDecorationsForUri(textEditor.document.uri);
-    },
-    null,
-    context.subscriptions
-  );
-
-  function onChangedDiagnostics(
-    diagnosticChangeEvent: vscode.DiagnosticChangeEvent
-  ) {
-    if (!vscode.window) {
-      return;
-    }
-
-    const activeTextEditor: vscode.TextEditor | undefined =
-      vscode.window.activeTextEditor;
-    if (!activeTextEditor) {
-      return;
-    }
-
-    // Many URIs can change - we only need to decorate the active text editor
-    for (const uri of diagnosticChangeEvent.uris) {
-      // Only update decorations for the active text editor.
-      if (uri.fsPath === activeTextEditor.document.uri.fsPath) {
-        updateDecorationsForUri(uri);
-        break;
-      }
-    }
-  }
-
-  function updateDecorationsForUri(uriToDecorate: vscode.Uri) {
-    if (!uriToDecorate) {
-      return;
-    }
-
-    // Only process "file://" URIs.
-    if (uriToDecorate.scheme !== "file") {
-      return;
-    }
-
-    if (!vscode.window) {
-      return;
-    }
-
-    const activeTextEditor: vscode.TextEditor | undefined =
-      vscode.window.activeTextEditor;
-    if (!activeTextEditor) {
-      return;
-    }
-
-    if (!activeTextEditor.document.uri.fsPath) {
-      return;
-    }
-
-    let numErrors = 0;
-    let numWarnings = 0;
-
-    if (errorLensEnabled) {
-      let aggregatedDiagnostics: any = {};
-      let diagnostic: vscode.Diagnostic;
-
-      // Iterate over each diagnostic that VS Code has reported for this file. For each one, add to
-      // a list of objects, grouping together diagnostics which occur on a single line.
-      for (diagnostic of vscode.languages.getDiagnostics(uriToDecorate)) {
-        let key = "line" + diagnostic.range.start.line;
-
-        if (aggregatedDiagnostics[key]) {
-          // Already added an object for this key, so augment the arrayDiagnostics[] array.
-          aggregatedDiagnostics[key].arrayDiagnostics.push(diagnostic);
-        } else {
-          // Create a new object for this key, specifying the line: and a arrayDiagnostics[] array
-          aggregatedDiagnostics[key] = {
-            line: diagnostic.range.start.line,
-            arrayDiagnostics: [diagnostic],
-          };
-        }
-
-        switch (diagnostic.severity) {
-          case 0:
-            numErrors += 1;
-            break;
-
-          case 1:
-            numWarnings += 1;
-            break;
-
-          // Ignore other severities.
-        }
-      }
-    }
-  }
 }
+
+// this method is called when your extension is deactivated
+export function deactivate(): void {}
+
+type DiagnosticCounts = {
+  errors: number;
+  warnings: number;
+};
 
 class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "in-your-face.openview";
 
-  private _view?: vscode.WebviewView;
+  readonly #extensionUri: vscode.Uri;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(extensionUri: vscode.Uri) {
+    this.#extensionUri = extensionUri;
+  }
 
-  resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext<unknown>,
-    token: vscode.CancellationToken
-  ): void | Thenable<void> {
-    this._view = webviewView;
-
+  resolveWebviewView(webviewView: vscode.WebviewView): void {
     webviewView.webview.options = {
-      // Allow scripts in the webview
-      enableScripts: true,
-      localResourceRoots: [this._extensionUri],
+      // The webview only renders static HTML, no scripts needed
+      enableScripts: false,
+      localResourceRoots: [this.#extensionUri],
     };
 
-    // default webview will show doom face 0
-    webviewView.webview.html = this.getHtmlContent(webviewView.webview, "0");
+    let lastHtml = "";
+    const render = () => {
+      const html = this.getHtmlContent(webviewView.webview);
+      // Only touch the webview when something actually changed,
+      // otherwise setting `html` reloads the DOM for no reason.
+      if (html !== lastHtml) {
+        lastHtml = html;
+        webviewView.webview.html = html;
+      }
+    };
 
-    // This is called every second is decides which doom face to show in the webview
-    setInterval(() => {
-      const config = vscode.workspace.getConfiguration('InYourFace');
-      const errorUseWarnings = config.get<boolean>('error.usewarnings');
-      let [errors, warnings] = getNumErrors();
-      if(errorUseWarnings == true){errors += warnings / 2;}
-      let i = "0";
-      if (errors) i = errors < 5 ? "1" : errors < 10 ? "2" : "3";
-      webviewView.webview.html = this.getHtmlContent(webviewView.webview, i);
-    }, 1000);
+    const listeners = [
+      vscode.languages.onDidChangeDiagnostics(render),
+      vscode.window.onDidChangeActiveTextEditor(render),
+      vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration("InYourFace")) {
+          render();
+        }
+      }),
+    ];
+    webviewView.onDidDispose(() => {
+      for (const listener of listeners) {
+        listener.dispose();
+      }
+    });
+
+    render();
   }
 
-  private getHtmlContent(webview: vscode.Webview, i: string): string {
+  private getHtmlContent(webview: vscode.Webview): string {
+    const useWarnings = vscode.workspace
+      .getConfiguration("InYourFace")
+      .get<boolean>("error.usewarnings", false);
+
+    const { errors, warnings } = countDiagnostics();
+
+    // Warnings count as half an error when enabled.
+    const severity = errors + (useWarnings ? warnings / 2 : 0);
+    const face = severity === 0 ? 0 : severity < 5 ? 1 : severity < 10 ? 2 : 3;
+
     const stylesheetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", "main.css")
+      vscode.Uri.joinPath(this.#extensionUri, "assets", "main.css")
+    );
+    const doomFaceUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.#extensionUri, "assets", `doom${face}.png`)
     );
 
-    const doomFace = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "assets", `doom${i}.png`)
-    );
+    const colorClass = errors ? "alarm" : useWarnings && warnings ? "yellow" : "";
+    const errorLabel = `${errors} ${errors === 1 ? "error" : "errors"}`;
+    const warningLabel = useWarnings
+      ? `${warnings} ${warnings === 1 ? "warning" : "warnings"}`
+      : "";
 
-    return getHtml(doomFace, stylesheetUri);
+    return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="${stylesheetUri}" />
+  </head>
+  <body>
+    <section>
+      <img src="${doomFaceUri}" alt="Doom face" />
+      <h2 class="${colorClass}">
+        ${errorLabel}
+        ${warningLabel}
+      </h2>
+    </section>
+  </body>
+</html>`;
   }
 }
 
-function getHtml(doomFace: vscode.Uri, stylesheetUri: vscode.Uri) {
-  const [errorNum, errorWar] = getNumErrors();
-
-  const config = vscode.workspace.getConfiguration('InYourFace');
-  const errorUseWarnings = config.get<boolean>('error.usewarnings');
-
-  console.log(errorUseWarnings);
-  if(errorUseWarnings == false){
-    return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <link rel="stylesheet" href="${stylesheetUri}" />
-      </head>
-      <body>
-        <section>
-          <img src="${doomFace}">
-          <h2 class=${errorNum ? "alarm" : ""}>
-            ${errorNum} ${errorNum === 1 ? "error" : "errors"}
-          </h2>
-        </section>
-      </body>
-		</html>
-  `;
+// Count the errors and warnings VS Code reports for the active file.
+function countDiagnostics(): DiagnosticCounts {
+  const document = vscode.window.activeTextEditor?.document;
+  if (!document) {
+    return { errors: 0, warnings: 0 };
   }
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <link rel="stylesheet" href="${stylesheetUri}" />
-      </head>
-      <body>
-        <section>
-          <img src="${doomFace}">
-          <h2 class=${errorNum ? "alarm" : errorWar ? "yellow": ""}>
-            ${errorNum} ${errorNum === 1 ? "error" : "errors"}
-            ${errorWar} ${errorWar === 1 ? "warning" : "warnings"}
-          </h2>
-        </section>
-      </body>
-		</html>
-  `;
-}
 
-// function to get the number of errors in the open file
-function getNumErrors(): [number, number]{
-  const activeTextEditor: vscode.TextEditor | undefined =
-    vscode.window.activeTextEditor;
-  if (!activeTextEditor) {
-    return [0,0];
-  }
-  const document: vscode.TextDocument = activeTextEditor.document;
+  let errors = 0;
+  let warnings = 0;
 
-  let numErrors = 0;
-  let numWarnings = 0;
-
-  let aggregatedDiagnostics: any = {};
-  let diagnostic: vscode.Diagnostic;
-
-  // Iterate over each diagnostic that VS Code has reported for this file. For each one, add to
-  // a list of objects, grouping together diagnostics which occur on a single line.
-  for (diagnostic of vscode.languages.getDiagnostics(document.uri)) {
-    let key = "line" + diagnostic.range.start.line;
-
-    if (aggregatedDiagnostics[key]) {
-      // Already added an object for this key, so augment the arrayDiagnostics[] array.
-      aggregatedDiagnostics[key].arrayDiagnostics.push(diagnostic);
-    } else {
-      // Create a new object for this key, specifying the line: and a arrayDiagnostics[] array
-      aggregatedDiagnostics[key] = {
-        line: diagnostic.range.start.line,
-        arrayDiagnostics: [diagnostic],
-      };
-    }
-
-    switch (diagnostic.severity) {
-      case 0:
-        numErrors += 1;
-        break;
-
-      case 1:
-        numWarnings += 1;
-        break;
-
-      // Ignore other severities.
+  for (const diagnostic of vscode.languages.getDiagnostics(document.uri)) {
+    if (diagnostic.severity === vscode.DiagnosticSeverity.Error) {
+      errors += 1;
+    } else if (diagnostic.severity === vscode.DiagnosticSeverity.Warning) {
+      warnings += 1;
     }
   }
 
-  return [numErrors, numWarnings];
+  return { errors, warnings };
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() {}
